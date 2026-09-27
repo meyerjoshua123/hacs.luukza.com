@@ -1,0 +1,71 @@
+<!-- title: Luukza HACS · Home Assistant integrations | description: HVAC Simulators and History Archiver: local-first Home Assistant integrations installed through HACS, with in-depth feature guides and help. | path: | nav: home -->
+<section class="hero">
+  <div class="section">
+    <span class="tag">🏠 Home Assistant · HACS</span>
+    <h1><span class="gradient-text">Understand your home,</span><br>not just log it.</h1>
+    <p class="lead">Two local-first Home Assistant integrations, installed through HACS. One works out what your heating, cooling and ventilation are really doing. The other keeps your entity history and exports it for analysis.</p>
+    <div class="btn-row">
+      <a class="btn btn-primary" href="/hvac-simulators/">Explore HVAC Simulators</a>
+      <a class="btn btn-secondary" href="/history-archiver/">Explore History Archiver</a>
+    </div>
+    <p class="subtle" style="margin-top:1.25rem">Free and open source · Runs entirely inside Home Assistant · No cloud</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="center" style="margin-bottom:2.5rem">
+    <span class="tag">The integrations</span>
+    <h2 class="title">Pick what you need</h2>
+    <p class="subtitle">Each one stands on its own. Both install the same way through HACS.</p>
+  </div>
+  <div class="grid grid-2">
+    <div class="card product-card">
+      <div class="head"><div class="logo">🌡️</div><div><h3>HVAC Simulators</h3><span class="pill">v0.3.0 · active development</span></div></div>
+      <p class="muted" style="margin:0">Works out what your aircon, heater, fans and open windows are doing from how each room's temperature, humidity and CO2 change, <strong>without smart plugs on them</strong>. It learns from you as you confirm or correct it.</p>
+      <ul>
+        <li>Heating, cooling, dehumidifying, ventilation, solar gain, heat loss…</li>
+        <li>Rooms from your areas, and zones from how they connect</li>
+        <li>Compressor cycling, setpoints, effectiveness and filter reminders</li>
+        <li>Power and energy, people from CO2, and a building efficiency record</li>
+      </ul>
+      <div class="links">
+        <a class="btn btn-primary" href="/hvac-simulators/">Features</a>
+        <a class="btn btn-secondary" href="/hvac-simulators/help/">Help &amp; setup</a>
+      </div>
+    </div>
+    <div class="card product-card">
+      <div class="head"><div class="logo">📦</div><div><h3>History Archiver</h3><span class="pill">v0.1.0 · early</span></div></div>
+      <p class="muted" style="margin:0">Continuously samples your numeric entities into its own SQLite database, together with device metadata, so you have long-term history ready for analysis, independent of Home Assistant's recorder.</p>
+      <ul>
+        <li>Configurable sampling interval (default 10 s)</li>
+        <li>Device and entity metadata alongside every entity</li>
+        <li>Fast SQLite storage with WAL and schema versioning</li>
+        <li>Export engine for CSV, JSON, XLSX, Parquet and more (being wired up)</li>
+      </ul>
+      <div class="links">
+        <a class="btn btn-primary" href="/history-archiver/">Features</a>
+        <a class="btn btn-secondary" href="/history-archiver/help/">Help &amp; setup</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section border-top">
+  <div class="center" style="margin-bottom:2.5rem">
+    <span class="tag">Getting started</span>
+    <h2 class="title">Install in a couple of minutes</h2>
+  </div>
+  <div class="grid grid-3">
+    <div class="card"><span class="emoji">1️⃣</span><h3>Have HACS</h3><p>HACS is the Home Assistant Community Store. If you don't have it yet, follow the <a href="https://hacs.xyz/docs/use/">HACS setup guide</a>.</p></div>
+    <div class="card"><span class="emoji">2️⃣</span><h3>Add the repository</h3><p>HACS → ⋮ → <strong>Custom repositories</strong>, paste the GitHub link, and choose the <strong>Integration</strong> category.</p></div>
+    <div class="card"><span class="emoji">3️⃣</span><h3>Download &amp; add</h3><p>Download it, restart Home Assistant, then go to <strong>Settings → Devices &amp; services → Add integration</strong>.</p></div>
+  </div>
+</section>
+
+<section class="section border-top">
+  <div class="grid grid-3">
+    <div class="card"><span class="emoji">🔒</span><h3>Local-first</h3><p>Everything runs inside your Home Assistant. No accounts, no cloud, no telemetry.</p></div>
+    <div class="card"><span class="emoji">🧪</span><h3>Tested</h3><p>HVAC Simulators ships with a test suite that runs inside a real Home Assistant core, including a replay of a real overnight recording.</p></div>
+    <div class="card"><span class="emoji">🤖</span><h3>Built with Claude Code</h3><p>These are hobby projects. HVAC Simulators and this site were designed and built with the help of <a href="https://claude.com/claude-code">Claude Code</a>. Please <a href="https://github.com/meyerjoshua123">report issues</a> if something looks wrong.</p></div>
+  </div>
+</section>

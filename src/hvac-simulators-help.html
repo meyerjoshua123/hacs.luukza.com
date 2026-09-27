@@ -1,0 +1,322 @@
+<!-- title: HVAC Simulators · Help | description: Setup guide and reference for HVAC Simulators: installation, sensors, rooms and zones, appliances, teaching, calibration, every option, entities, services, events and troubleshooting. | path: hvac-simulators/help | nav: hvac-help -->
+<div class="docs">
+  <aside class="toc" aria-label="On this page">
+    <h4>On this page</h4>
+    <a href="#install">Install</a>
+    <a href="#first-setup">First setup</a>
+    <a href="#sensors">Which sensors help</a>
+    <a href="#rooms">Rooms &amp; zones</a>
+    <a href="#appliances">Appliances</a>
+    <a class="sub" href="#hvac-units">HVAC units</a>
+    <a class="sub" href="#fans">Extractor fan groups</a>
+    <a class="sub" href="#plugs">Plugged-in appliances</a>
+    <a href="#states">Mode, state &amp; cycling</a>
+    <a href="#manual">Manual mode &amp; timeouts</a>
+    <a href="#teaching">Teaching &amp; calibration</a>
+    <a href="#energy">Power &amp; energy</a>
+    <a href="#effectiveness">Effectiveness &amp; filters</a>
+    <a href="#people">People from CO2</a>
+    <a href="#efficiency">Efficiency record</a>
+    <a href="#tuning">Tuning reference</a>
+    <a href="#entities">Entities reference</a>
+    <a href="#services">Services</a>
+    <a href="#events">Events &amp; automations</a>
+    <a href="#troubleshooting">Troubleshooting</a>
+    <a href="#faq">FAQ</a>
+  </aside>
+  <article class="prose">
+    <span class="tag">HVAC Simulators · Help</span>
+    <h1>Setup guide &amp; reference</h1>
+    <p>This guide covers version <strong>0.3.0</strong>. If you're coming from an older version, your existing setup becomes the <strong>main room</strong> automatically. It keeps the same entities, and everything it has learned moves across.</p>
+
+    <h2 id="install">Install</h2>
+    <ol class="steps">
+      <li>Make sure <a href="https://hacs.xyz/docs/use/">HACS</a> is installed.</li>
+      <li>In HACS open <strong>⋮ → Custom repositories</strong>, add <code>https://github.com/meyerjoshua123/ha_hvac_simulators</code> and choose <strong>Integration</strong>.</li>
+      <li>Find <strong>HVAC Simulators</strong> in HACS, <strong>Download</strong> it, then restart Home Assistant.</li>
+      <li>Go to <strong>Settings → Devices &amp; services → Add integration → HVAC Simulators</strong>.</li>
+    </ol>
+    <p><strong>Updates:</strong> HACS shows new releases automatically. If an update hasn't appeared, open the integration in HACS and use <strong>⋮ → Update information</strong>.</p>
+
+    <h2 id="first-setup">First setup</h2>
+    <p>The first screen sets up your <strong>main room</strong>: usually the room with your best sensors, or the open-plan living space.</p>
+    <div class="table-wrap"><table>
+      <tr><th>Field</th><th>What to pick</th></tr>
+      <tr><td>Name</td><td>What you call this space, e.g. <em>Home</em> or <em>Apartment</em>. It prefixes the main room's entities.</td></tr>
+      <tr><td>Indoor temperature <em>(required)</em></td><td>A temperature sensor in the room.</td></tr>
+      <tr><td>Indoor humidity</td><td>Strongly recommended: cooling, drying, showers and compressor cycling all show up in humidity.</td></tr>
+      <tr><td>Outdoor temperature / humidity</td><td>A sensor or a <code>weather</code> entity. Needed for heat loss, heat leaking in, solar gain, open windows and absolute humidity.</td></tr>
+      <tr><td>CO2</td><td>Unlocks fans vs filters, airing out, people counting and the air-change rate.</td></tr>
+      <tr><td>Air quality</td><td>PM2.5, VOC or an AQI sensor, to detect air filtering. Tick <em>Lower is better</em> unless your sensor counts upwards for cleaner air.</td></tr>
+      <tr><td>Door &amp; window sensors</td><td>Any number. Without them, turn on <em>Estimate open doors/windows</em>.</td></tr>
+      <tr><td>Solar gain threshold</td><td>The outdoor temperature at which warming with the sun up counts as solar gain. Default 22 °C.</td></tr>
+      <tr><td>Area, room type, air gaps</td><td>Where the main room is, what kind of room it is, and how leaky (none, small, large), with optional notes such as <em>gap under the hallway door</em>.</td></tr>
+    </table></div>
+    <p>Then add appliances (you can also do that later). Everything else lives under <strong>Configure</strong> on the integration.</p>
+
+    <h2 id="sensors">Which sensors help</h2>
+    <div class="table-wrap"><table>
+      <tr><th>You have…</th><th>You get…</th></tr>
+      <tr><td>Indoor temperature only</td><td>Heating/cooling from temperature trends, setpoints, cycling from temperature, effectiveness.</td></tr>
+      <tr><td>+ indoor humidity</td><td>Cooling vs dry mode, humidifying, compressor cycling hidden by thermal mass, showers.</td></tr>
+      <tr><td>+ outdoor temperature</td><td>Passive drift (leak in, heat loss), solar gain, effectiveness adjusted for weather, open-window estimate, efficiency record.</td></tr>
+      <tr><td>+ outdoor humidity</td><td>Absolute-humidity comparisons and a stronger open-window estimate.</td></tr>
+      <tr><td>+ CO2</td><td>Extractor fans (and how many), airing out, people, air changes per hour.</td></tr>
+      <tr><td>+ air quality</td><td>Air filtering (aircon filter or purifier).</td></tr>
+      <tr><td>+ smart plugs</td><td>Appliance heat and moisture removed from detection, plus plug statuses.</td></tr>
+    </table></div>
+
+    <h2 id="rooms">Rooms &amp; zones</h2>
+    <p><strong>Configure → Add a room</strong> turns a Home Assistant area into a room with its own sensors:</p>
+    <ul>
+      <li><strong>Temperature</strong>: needed for the room's own detection and learning. A room without it (e.g. a bathroom with only a humidity sensor) still gets humidity rates and shower detection.</li>
+      <li><strong>Humidity, CO2, air quality, door/window sensors</strong>: as for the main room.</li>
+      <li><strong>Air volume</strong>: floor area × ceiling height, used for CO2, occupancy and fan airflow.</li>
+      <li><strong>Known air gaps</strong>: <em>small</em> starts the room 1.5× leakier, <em>large</em> 2.5×, until the real rate is learned. Notes are for you, and show on the room's heat-loss sensor.</li>
+      <li><strong>Room type</strong>: <em>Bathroom</em> turns on shower detection.</li>
+    </ul>
+    <h3>Room links (zones)</h3>
+    <p><strong>Configure → Room links</strong>: for each room, pick the rooms its air flows into. Linked rooms form a <strong>zone</strong> (links work both ways). Zones matter because:</p>
+    <ul>
+      <li>An appliance in a room <em>without</em> a temperature sensor is observed by a sensored room in its zone, the main room first. Example: a bathroom fan clearing CO2 that the living-room sensor measures.</li>
+      <li>A shower in a zone stops the other rooms in that zone from blaming a humidifier for the rising humidity.</li>
+    </ul>
+    <p>Each room gets its own device, placed in its area. It includes <em>difference to main room</em> sensors, handy for comparing the laundry with the living room.</p>
+
+    <h2 id="appliances">Appliances</h2>
+    <p>Add appliances during setup or under <strong>Configure → Add an appliance</strong>. Pick the <strong>area</strong> each one is in, so it's matched to the right room.</p>
+    <h3 id="hvac-units">HVAC units (aircon / heat pump / ventilation)</h3>
+    <p>First tick what the unit can do. That decides its modes and the power fields you're asked for:</p>
+    <div class="table-wrap"><table>
+      <tr><th>Function</th><th>Modes</th><th>Detected from</th></tr>
+      <tr><td>Heat</td><td>heat</td><td>warming beyond passive</td></tr>
+      <tr><td>Air condition</td><td>cool, dry</td><td>cooling with humidity lagging, humidity dropping, compressor cycling</td></tr>
+      <tr><td>Ventilate</td><td>ventilate, filter</td><td>CO2 clearing (fresh air), particulates improving without CO2 (filter)</td></tr>
+    </table></div>
+    <div class="table-wrap"><table>
+      <tr><th>Setting</th><th>Meaning</th></tr>
+      <tr><td>Power per mode</td><td>Rated watts while actively running in that mode.</td></tr>
+      <tr><td>Standby power</td><td>Watts when off.</td></tr>
+      <tr><td>Min / max setpoint</td><td>Detected setpoints are kept within this range.</td></tr>
+      <tr><td>Inverter</td><td>On: holds the setpoint at reduced output (the idle power factor). Off: fixed-speed, rests on its fan.</td></tr>
+      <tr><td>Idle power factor</td><td>Share of rated power an inverter uses while holding its setpoint (default 0.4).</td></tr>
+      <tr><td>Fan-only power</td><td>Watts when the compressor is off but the unit is on (between cycles, or the room is already past the setpoint).</td></tr>
+      <tr><td>Manual timeout</td><td>Manual mode/setpoint reverts to auto after this many minutes (0 = never).</td></tr>
+      <tr><td>Switched-off detection</td><td>In manual heat/cool, drifting the wrong way past the setpoint this long means the unit was turned off (0 = never).</td></tr>
+      <tr><td>Calculate energy</td><td>Adds a kWh sensor. Turn it off if you use PowerCalc.</td></tr>
+    </table></div>
+    <p><strong>Heaters</strong> work the same way, with a single heat mode.</p>
+
+    <h3 id="fans">Extractor fan groups</h3>
+    <p>One appliance can be a group of fans. Set the count, the names (e.g. <code>Bathroom, Kitchen, Laundry</code>), the airflow per fan (m³/h) and the power per fan.</p>
+    <ul>
+      <li><strong>How many are on</strong> comes from how fast CO2 clears beyond natural leakage. Until you calibrate, each fan is assumed to move its rated airflow.</li>
+      <li><strong>Which ones</strong>: run a single fan and call <code>hvac_simulators.calibrate</code> with <code>fans: [Bathroom]</code>. Once every fan is calibrated this way, the <em>Fans on</em> sensor lists the likely ones.</li>
+      <li><strong>Quick calibration</strong>: set the <em>Fans running (calibrate)</em> number to how many are on right now, including <code>0</code> with all of them off.</li>
+    </ul>
+    <p>Fans are only credited when doors and windows are known to be shut. Without door/window sensors or a confident estimate, a fast CO2 drop is split between "fan" and "airing out".</p>
+
+    <h3 id="plugs">Plugged-in appliances (heat sources)</h3>
+    <p>Choose <em>Heat source with a smart plug</em>, then the kind: fridge/freezer, washing machine, clothes dryer, oven/microwave, stove/cooktop, or general (TV, iron, steamer, hair dryer, soldering iron…). Then pick the plug's power sensor.</p>
+    <ul>
+      <li><strong>Status</strong> sensor: <code>active</code> above the <em>active</em> threshold, <code>idle</code> between the two thresholds, <code>off</code> below the <em>off</em> threshold. Attributes include cycles, 6-hour duty cycle, the last active spell and the last run length (short pauses count as the same run). Defaults depend on the kind, e.g. a fridge is active above 30 W and a dryer above 50 W.</li>
+      <li><strong>Heat effect</strong>: learned °C/h and %/h per kW, only while no HVAC is running and doors and windows are shut. When several run together, each one only gets credit for its own share. Dryers, stoves and washers start out assumed to add moisture.</li>
+      <li>The effect is <strong>subtracted before HVAC detection</strong>, so a running dryer isn't read as heating or a humidifier.</li>
+    </ul>
+    <div class="callout"><p>Use <code>binary_sensor.&lt;room&gt;_appliance_heat_or_moisture</code> as a condition in humidifier or dehumidifier automations, so they don't react to the dryer.</p></div>
+    <p>Want full washing-machine program detection? That's what <a href="https://github.com/3dg1luk43/ha_washdata">WashData</a> is for. HVAC Simulators deliberately keeps plug statuses basic.</p>
+
+    <h2 id="states">Mode, state &amp; cycling</h2>
+    <p>Every simulated appliance has:</p>
+    <ul>
+      <li><strong>Mode</strong>: what it's set to (heat, cool, dry, ventilate, filter, on, off).</li>
+      <li><strong>State</strong>: <code>active</code> (driving the temperature), <code>idle</code> (on but resting) or <code>off</code>.</li>
+      <li><strong>Idle reason</strong>: <em>holding setpoint</em>, <em>between compressor cycles (fan only)</em>, or <em>setpoint satisfied, compressor off (fan only)</em>.</li>
+    </ul>
+    <p>When the room falls, rises a little and falls again, the mode stays <strong>cool</strong> while the state cycles between active and idle. The turning points give the <strong>detected setpoint</strong>.</p>
+    <h3>Cycling hidden by thermal mass</h3>
+    <p>In heavy buildings the temperature can stay flat while the aircon cycles, because the building gives back the heat it removes. The compressor still shows in humidity as a regular swing every 15–25 minutes. The detector needs a clear periodic rhythm that is big enough, repeats, and is regularly spaced. It needs about 75 minutes of history before it can decide. While it's detected, the state follows the compressor, and the <strong>thermostat offset</strong> (room sensor versus the unit's own thermostat) is learned.</p>
+
+    <h2 id="manual">Manual mode, timeouts &amp; switched off</h2>
+    <ul>
+      <li><code>select.&lt;appliance&gt;_manual_mode</code>: <code>auto</code> (inferred), <code>off</code>, or one of its modes. While a manual heat/cool mode is set, the unit simulates thermostat cycling around the setpoint.</li>
+      <li><code>number.&lt;appliance&gt;_setpoint</code>: the setpoint on the unit. <em>Use detected setpoint</em> clears it.</li>
+      <li><strong>Manual timeout</strong> (per appliance): after this many minutes, manual mode and setpoint revert to <code>auto</code>.</li>
+      <li><strong>Switched-off detection</strong>: if, in manual heat/cool, the room drifts the wrong way past the setpoint for the set time, with no compressor cycling seen, the unit is marked off and goes back to <code>auto</code>.</li>
+    </ul>
+    <p>While a manual mode is active, it also teaches the model every 15 minutes (you can turn this off under Tuning).</p>
+
+    <h2 id="teaching">Teaching &amp; calibration</h2>
+    <p>At first the physics rules make the calls. Every example you give is stored, and a nearest-neighbour model trained on your examples takes a growing share of each decision, up to 75% by default.</p>
+    <ul>
+      <li><strong>Suggestion is correct</strong> (button): confirms the current suggestion for that room.</li>
+      <li><strong>Actual mode (teach)</strong> (select): pick what's really happening.</li>
+      <li><strong>Needs feedback</strong> (binary sensor): on when an active suggestion is uncertain. That's the best moment to teach.</li>
+      <li><code>hvac_simulators.calibrate</code>: record an appliance's mode, state, setpoint and filter status. Several calibrations are combined, newest weighted most.</li>
+    </ul>
+    <p>Feedback also teaches each room's passive heat-exchange rate, and which appliance usually does what (e.g. heating is usually the heat pump, not the oil heater).</p>
+
+    <h2 id="energy">Power &amp; energy</h2>
+    <p>Each appliance gets a <strong>Power</strong> sensor. It uses the rated power for the mode when active; when idle, the inverter holding power or the fan-only power; for fan groups, power × fans on; otherwise standby. The <strong>Energy</strong> sensor (kWh, <code>total_increasing</code>) goes straight into the Energy dashboard.</p>
+    <p><strong>PowerCalc:</strong> turn off <em>Calculate energy</em> for the appliance. Then point PowerCalc at the Power sensor, or use the <em>On</em> binary sensor with a fixed wattage.</p>
+
+    <h2 id="effectiveness">Effectiveness &amp; filter reminders</h2>
+    <p>While a unit is actively heating or cooling, it measures how hard the unit pushes the temperature beyond passive drift. It compares that with a baseline built after the last filter clean, at the same indoor/outdoor gap. The result is rated <strong>Excellent → Great → Good → OK → Bad → Terrible</strong>. It needs about 20 active samples before a rating appears.</p>
+    <ul>
+      <li>When the rating reaches your chosen level: a persistent notification, an optional push through any <code>notify</code> service, and the <code>hvac_simulators_effectiveness_changed</code> event.</li>
+      <li>After cleaning the filter, press <strong>Filter cleaned</strong> (or <code>calibrate</code> with <code>filter: clean</code>).</li>
+    </ul>
+
+    <h2 id="people">People from CO2</h2>
+    <p>People are estimated from how much CO2 is being generated (<code>dCO2/dt + air changes × (CO2 − outdoor CO2)</code>), divided by what one person breathes out at their activity level. The activity defaults to <em>sleeping</em> during your sleep hours, and you can override it with the <em>Activity level</em> select.</p>
+    <ol class="steps">
+      <li>With everyone out and doors closed, set <em>People home (calibrate)</em> to <code>0</code>. This teaches the room's natural air-change rate, which also sharpens fan detection.</li>
+      <li>With a known number of people, enter the count (and activity with the service). This teaches one person's CO2 output in that room.</li>
+    </ol>
+
+    <h2 id="efficiency">Efficiency record</h2>
+    <p>Each room with a temperature sensor keeps a day-by-day record of what the building did on its own, after removing HVAC and appliances:</p>
+    <div class="table-wrap"><table>
+      <tr><th>Sensor</th><th>Meaning</th></tr>
+      <tr><td>Heat loss coefficient</td><td>°C per hour the room drifts per °C of indoor-outdoor difference, with everything off and closed (30-day median). Lower is better insulated.</td></tr>
+      <tr><td>Heat lost today</td><td>°C·h the room cooled passively.</td></tr>
+      <tr><td>Heat leaked in today</td><td>°C·h it warmed from a warmer outside.</td></tr>
+      <tr><td>Solar gain today</td><td>°C·h it warmed from the sun.</td></tr>
+      <tr><td>Appliance heat today</td><td>°C·h added by plugged-in appliances.</td></tr>
+      <tr><td>Ventilation air changes today</td><td>Air changes from fans and airing out.</td></tr>
+    </table></div>
+    <p>Home Assistant's history keeps these long-term, so you can compare seasons, or your old and new home.</p>
+
+    <h2 id="tuning">Tuning reference</h2>
+    <p><strong>Configure → Tuning, occupancy and notifications.</strong> The defaults are sensible starting points; teaching usually matters more than tuning.</p>
+    <div class="table-wrap"><table>
+      <tr><th>Option</th><th>Default</th><th>What it does</th></tr>
+      <tr><td>Trend window</td><td>15 min</td><td>How far back trends are measured. Longer is steadier but slower.</td></tr>
+      <tr><td>Solar gain threshold</td><td>22 °C</td><td>Outdoor temperature at which sunny warming counts as solar gain.</td></tr>
+      <tr><td>Solar margin</td><td>2 °C</td><td>Indoor this far above outdoor while warming with the sun up points to the sun (fully on mild days, fading on cold ones).</td></tr>
+      <tr><td>Rate beyond passive</td><td>0.4 °C/h</td><td>How much faster than passive drift means an appliance is working.</td></tr>
+      <tr><td>Stable rate</td><td>0.15 °C/h</td><td>Below this, temperature counts as stable.</td></tr>
+      <tr><td>Humidity drop</td><td>−3 %/h</td><td>Drop that means dehumidifying (the same size rise means humidifying).</td></tr>
+      <tr><td>Air quality improvement</td><td>5 %/h</td><td>Relative improvement that counts as filtering or ventilation.</td></tr>
+      <tr><td>Minimum confidence</td><td>0.45</td><td>Confidence needed before an appliance is switched on.</td></tr>
+      <tr><td>Setpoint band</td><td>1 °C</td><td>Drift beyond this past the setpoint means the unit stopped holding it.</td></tr>
+      <tr><td>Max learned weight</td><td>0.75</td><td>How much your examples can outweigh the rules.</td></tr>
+      <tr><td>Learn from manual modes</td><td>on</td><td>Manual modes teach every 15 minutes.</td></tr>
+      <tr><td>Max idle time</td><td>60 min</td><td>A fixed-speed unit idle this long counts as off (inverters can hold indefinitely).</td></tr>
+      <tr><td>Space volume</td><td>100 m³</td><td>Main room's air volume (extra rooms have their own).</td></tr>
+      <tr><td>Outdoor CO2</td><td>420 ppm</td><td>Baseline CO2 of outdoor air.</td></tr>
+      <tr><td>Sleep hours</td><td>23 → 7</td><td>Default activity is <em>sleeping</em> in this window.</td></tr>
+      <tr><td>Notify at rating</td><td>OK</td><td>Effectiveness level that triggers a filter reminder.</td></tr>
+      <tr><td>Notify service</td><td>—</td><td>Optional, e.g. <code>notify.mobile_app_phone</code>.</td></tr>
+      <tr><td>Update</td><td>fixed interval</td><td>Or <em>every time a sensor updates</em> (faster, at least 2 s apart).</td></tr>
+      <tr><td>Update interval</td><td>60 s</td><td>Interval in fixed-interval mode.</td></tr>
+    </table></div>
+
+    <h2 id="entities">Entities reference</h2>
+    <h3>Per room (the main room uses the space name)</h3>
+    <div class="table-wrap"><table>
+      <tr><th>Entity</th><th>Notes</th></tr>
+      <tr><td>Suggested mode</td><td>What's happening now, with reasons, candidates, features and compressor cycling in the attributes.</td></tr>
+      <tr><td>Suggestion confidence</td><td>0–100 %.</td></tr>
+      <tr><td>Learned examples</td><td>Number of taught examples, accuracy, learned rates.</td></tr>
+      <tr><td>Temperature / humidity / CO2 / air quality trend</td><td>Rates over the trend window.</td></tr>
+      <tr><td>Air changes per hour</td><td>From CO2 decay.</td></tr>
+      <tr><td>Rate … since last reading / over 5, 10, 15 min</td><td>Hidden by default: enable the ones you want.</td></tr>
+      <tr><td>Indoor-outdoor … difference, absolute humidity, CO2 above outdoor</td><td>Diagnostic.</td></tr>
+      <tr><td>… difference to main room</td><td>Extra rooms only.</td></tr>
+      <tr><td>Estimated people</td><td>Rooms with CO2.</td></tr>
+      <tr><td>Heat loss coefficient, heat lost / leaked in / solar gain / appliance heat / air changes today</td><td>Efficiency record.</td></tr>
+      <tr><td>Appliance heat / moisture effect, raw trends</td><td>Rooms with plugged-in appliances.</td></tr>
+      <tr><td>Needs feedback · Door or window open (estimated) · Shower running · Appliance heat or moisture</td><td>Binary sensors (shower: bathrooms only).</td></tr>
+      <tr><td>Suggestion is correct · Reset learning</td><td>Buttons.</td></tr>
+      <tr><td>Actual mode (teach) · People home (calibrate)</td><td>Select / number.</td></tr>
+      <tr><td>Activity level</td><td>One per space, when any room has CO2.</td></tr>
+    </table></div>
+    <h3>Per appliance</h3>
+    <div class="table-wrap"><table>
+      <tr><th>Entity</th><th>Notes</th></tr>
+      <tr><td>State</td><td>active / idle / off, with idle reason, thermostat offset, cycles, duty cycle, manual expiry.</td></tr>
+      <tr><td>Mode · On · Power · Energy</td><td>Energy only if enabled.</td></tr>
+      <tr><td>Detected setpoint · Setpoint · Use detected setpoint</td><td>Heaters and heat/cool units.</td></tr>
+      <tr><td>Effectiveness · Filter needs attention · Filter cleaned</td><td>Heating/cooling units.</td></tr>
+      <tr><td>Manual mode</td><td>auto / off / modes.</td></tr>
+      <tr><td>Fans on · Fans running (calibrate)</td><td>Fan groups.</td></tr>
+      <tr><td>Status · Running · Heat effect</td><td>Plugged-in appliances.</td></tr>
+    </table></div>
+
+    <h2 id="services">Services</h2>
+    <p>All services take a <code>device_id</code>: the space, a room, or an appliance device.</p>
+    <div class="table-wrap"><table>
+      <tr><th>Service</th><th>Fields</th><th>Does</th></tr>
+      <tr><td><code>teach</code></td><td>label</td><td>Teach what's happening in the targeted room. Use a label key or display name, e.g. <em>Cooling - Lounge AC</em>.</td></tr>
+      <tr><td><code>confirm</code></td><td>—</td><td>The room's current suggestion is right.</td></tr>
+      <tr><td><code>reset_learning</code></td><td>—</td><td>Forget what a room learned (the space device resets everything).</td></tr>
+      <tr><td><code>set_manual</code></td><td>mode, setpoint, fans_on</td><td>Set an appliance's manual mode/setpoint (<code>auto</code> to infer again).</td></tr>
+      <tr><td><code>calibrate</code></td><td>mode, status, setpoint, filter, fans, fans_on</td><td>Record ground truth for an appliance or fan group.</td></tr>
+      <tr><td><code>calibrate_occupancy</code></td><td>people, activity</td><td>Head count for a room.</td></tr>
+      <tr><td><code>reset_energy</code></td><td>—</td><td>Zero an appliance's energy (or all of a space's).</td></tr>
+    </table></div>
+<pre><code># The aircon is cooling to 22 °C with a clean filter
+service: hvac_simulators.calibrate
+data:
+  device_id: YOUR_AIRCON_DEVICE_ID
+  mode: cool
+  status: active
+  setpoint: 22
+  filter: clean
+
+# Only the bathroom fan is running right now
+service: hvac_simulators.calibrate
+data:
+  device_id: YOUR_FAN_GROUP_DEVICE_ID
+  fans: [Bathroom]</code></pre>
+
+    <h2 id="events">Events &amp; automations</h2>
+    <div class="table-wrap"><table>
+      <tr><th>Event</th><th>Data</th></tr>
+      <tr><td><code>hvac_simulators_effectiveness_changed</code></td><td>entry_id, appliance_id, appliance, rating, previous</td></tr>
+      <tr><td><code>hvac_simulators_appliance_event</code></td><td>entry_id, appliance_id, event (<code>manual_timeout</code> or <code>switched_off_detected</code>)</td></tr>
+    </table></div>
+<pre><code># Don't let the dehumidifier automation react to the dryer
+alias: Dehumidifier on when humid
+trigger:
+  - platform: numeric_state
+    entity_id: sensor.laundry_humidity
+    above: 70
+condition:
+  - condition: state
+    entity_id: binary_sensor.home_laundry_appliance_heat_or_moisture
+    state: "off"
+action:
+  - service: switch.turn_on
+    target:
+      entity_id: switch.dehumidifier
+
+# Tell me when the aircon was switched off while in manual mode
+alias: Aircon switched off
+trigger:
+  - platform: event
+    event_type: hvac_simulators_appliance_event
+    event_data:
+      event: switched_off_detected
+action:
+  - service: notify.mobile_app_phone
+    data:
+      message: "The aircon looks like it was switched off; back to automatic detection."</code></pre>
+
+    <h2 id="troubleshooting">Troubleshooting</h2>
+    <details><summary>The suggested mode says "Collecting data"</summary><p>Trends need a few minutes of readings (about a third of the trend window, at least 5 minutes). Check that the indoor temperature sensor is reporting.</p></details>
+    <details><summary>It flips between causes on a quiet night</summary><p>Sensors wander a little, and a 15-minute window can mistake that for real change. Teach it a few times, or raise the trend window to 30 minutes and the rate thresholds under Tuning. Regular compressor cycling is detected separately and isn't affected by these settings.</p></details>
+    <details><summary>The aircon shows idle all night but I know it was on</summary><p>If the room was already colder than the cooling setpoint, the compressor genuinely had nothing to do and only the fan ran. If it was cycling, the humidity pattern should appear after about 75 minutes. Setting the manual mode and setpoint, or teaching it, speeds things up.</p></details>
+    <details><summary>It blames an extractor fan when I opened a window</summary><p>Add door/window sensors to that room, or give it outdoor temperature and humidity so the open-window estimate has two signals to work with. Without either, fans and open windows are shown as equally likely.</p></details>
+    <details><summary>The effectiveness rating never appears</summary><p>It needs outdoor temperature and about 20 samples of active heating or cooling after warm-up. Short cycles take longer to collect.</p></details>
+    <details><summary>A bathroom fan isn't detected</summary><p>The fan's room needs to be linked (Room links) to a room with a CO2 sensor, and doors and windows need to be known closed.</p></details>
+    <details><summary>Where is my data?</summary><p>Learning is stored in Home Assistant's <code>.storage</code> folder as <code>hvac_simulators.&lt;entry id&gt;</code>. Nothing leaves your Home Assistant.</p></details>
+
+    <h2 id="faq">FAQ</h2>
+    <details><summary>Does it control my aircon?</summary><p>No. It only observes and estimates. To control a unit, use its own integration, and use HVAC Simulators' sensors in your automations.</p></details>
+    <details><summary>Does it work in °F?</summary><p>Yes. Readings are converted to °C internally; entity units follow your settings.</p></details>
+    <details><summary>Can I use it for several homes?</summary><p>Yes. Add the integration once per home (space). Each has its own rooms, appliances and learning.</p></details>
+    <details><summary>Who made this?</summary><p>It's a hobby project by <a href="https://github.com/meyerjoshua123">@meyerjoshua123</a>, designed and built with the help of <a href="https://claude.com/claude-code">Claude Code</a>. Issues and ideas are welcome on <a href="https://github.com/meyerjoshua123/ha_hvac_simulators/issues">GitHub</a>.</p></details>
+  </article>
+</div>

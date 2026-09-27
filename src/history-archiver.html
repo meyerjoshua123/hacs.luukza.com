@@ -1,0 +1,38 @@
+<!-- title: History Archiver · Features | description: History Archiver continuously samples Home Assistant entities with device metadata into its own SQLite database, with an export engine for CSV, JSON, XLSX, Parquet and more. | path: history-archiver | nav: archiver -->
+<section class="hero">
+  <div class="section">
+    <span class="tag">📦 History Archiver · v0.1.0 (early)</span>
+    <h1><span class="gradient-text">Your entity history,</span><br>kept and ready to analyse.</h1>
+    <p class="lead">History Archiver samples your numeric entities at a steady interval into its own SQLite database, together with each device's details. That gives you clean, regular long-term data you can analyse or export, independent of how Home Assistant's recorder is set up.</p>
+    <div class="btn-row">
+      <a class="btn btn-primary" href="/history-archiver/help/#install">Install</a>
+      <a class="btn btn-secondary" href="https://github.com/meyerjoshua123/ha-history-archiver">GitHub</a>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="callout warn" style="max-width:52rem;margin:0 auto 2.5rem">
+    <p><strong>Early release.</strong> In v0.1.0, recording works: entities are sampled into the database with their metadata. The export engine, profiles, scheduled and predefined exports, and backup/restore are all in the code but <strong>not yet exposed</strong> as services or settings. The <a href="/history-archiver/help/#status">status table</a> shows exactly what's available today.</p>
+  </div>
+  <div class="grid grid-3">
+    <div class="card"><span class="emoji">⏱️</span><h3>Continuous sampling</h3><p>Records every numeric entity every few seconds (default 10 s), so the data is evenly spaced and easy to analyse. Choosing entities is <span class="pill">coming</span>.</p></div>
+    <div class="card"><span class="emoji">🗄️</span><h3>Its own SQLite database</h3><p>Stored at <code>/config/history_archiver/history.db</code>, with WAL mode, async I/O and schema versioning for safe upgrades.</p></div>
+    <div class="card"><span class="emoji">🏷️</span><h3>Device metadata</h3><p>Keeps manufacturer, model, software and hardware version, device class, entity category, integration, area, device and entity name alongside your data.</p></div>
+    <div class="card"><span class="emoji">📤</span><h3>Multi-format export engine</h3><p>CSV, JSON, HTML, XLSX, SQLite, Parquet, Feather and Arrow. <span class="pill">coming</span></p></div>
+    <div class="card"><span class="emoji">📉</span><h3>Downsampling</h3><p>Export raw samples, or a mean or time-weighted mean per interval. <span class="pill">coming</span></p></div>
+    <div class="card"><span class="emoji">🗂️</span><h3>Profiles &amp; schedules</h3><p>Named sets of entities with their own formats and schedules, plus day, week, month and year exports. <span class="pill">coming</span></p></div>
+    <div class="card"><span class="emoji">💾</span><h3>Backup &amp; restore</h3><p>Timestamped copies of the database, for migrating or recovering. <span class="pill">coming</span></p></div>
+    <div class="card"><span class="emoji">🔒</span><h3>Local-first</h3><p>No cloud and no external services. Your history stays in your Home Assistant config folder.</p></div>
+    <div class="card"><span class="emoji">🔗</span><h3>Pairs with HVAC Simulators</h3><p>Archive the room trends, appliance states and efficiency sensors to study your home over months.</p></div>
+  </div>
+</section>
+
+<section class="section border-top center">
+  <h2 class="title">Get started</h2>
+  <p class="subtitle" style="margin-bottom:2rem">Install through HACS and pick a sampling interval. The help page covers what's stored, how much space it takes, and how to query it.</p>
+  <div class="btn-row">
+    <a class="btn btn-primary" href="/history-archiver/help/">Read the help</a>
+    <a class="btn btn-secondary" href="https://github.com/meyerjoshua123/ha-history-archiver/issues">Report an issue</a>
+  </div>
+</section>
