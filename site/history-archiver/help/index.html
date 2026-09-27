@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>History Archiver · Help | Luukza HACS</title>
+<meta name="description" content="Setup guide and reference for History Archiver: installation, settings, what&#x27;s recorded, database layout, storage size, querying your data, current status and FAQ.">
+<link rel="canonical" href="https://hacs.luukza.com/history-archiver/help/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="History Archiver · Help | Luukza HACS">
+<meta property="og:description" content="Setup guide and reference for History Archiver: installation, settings, what&#x27;s recorded, database layout, storage size, querying your data, current status and FAQ.">
+<meta property="og:url" content="https://hacs.luukza.com/history-archiver/help/">
+<meta name="theme-color" content="#1b6f5f">
+<link rel="icon" href="/assets/logo-mark.svg" type="image/svg+xml">
+<script>
+(function () {
+  try {
+    var s = localStorage.getItem("hacs-luukza-theme");
+    var dark = s === "dark" || (s !== "light" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+    document.documentElement.classList.toggle("dark", dark);
+  } catch (e) {}
+})();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="/assets/site.css">
+<script src="/assets/site.js" defer></script>
+</head>
+<body>
+<nav class="nav" aria-label="Main">
+  <div class="nav-inner">
+    <a class="brand" href="/"><img src="/assets/logo-mark.svg" alt=""><span>Luukza <small>HACS</small></span></a>
+    <div class="nav-links"><a href="/hvac-simulators/">HVAC Simulators</a><a href="/hvac-simulators/help/">HVAC help</a><a href="/history-archiver/">History Archiver</a><a href="/history-archiver/help/" aria-current="page">Archiver help</a></div>
+    <div class="nav-actions">
+      <button class="icon-btn" data-theme-toggle aria-label="Toggle light/dark theme"><svg class="theme-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path stroke-linecap="round" d="M12 3v1.5M12 19.5V21M4.5 12H3M21 12h-1.5M5.6 5.6l1.05 1.05M17.35 17.35l1.05 1.05M18.4 5.6l-1.05 1.05M6.65 17.35l-1.05 1.05"/></svg><svg class="theme-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg></button>
+      <button class="icon-btn menu-btn" data-menu-toggle aria-label="Menu" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+    </div>
+  </div>
+  <div class="mobile-menu"><a href="/hvac-simulators/">HVAC Simulators</a><a href="/hvac-simulators/help/">HVAC help</a><a href="/history-archiver/">History Archiver</a><a href="/history-archiver/help/" aria-current="page">Archiver help</a></div>
+</nav>
+<main>
+<div class="docs">
+  <aside class="toc" aria-label="On this page">
+    <h4>On this page</h4>
+    <a href="#install">Install</a>
+    <a href="#settings">Settings</a>
+    <a href="#status">What works today</a>
+    <a href="#recorded">What's recorded</a>
+    <a href="#storage">Storage size</a>
+    <a href="#database">Database layout</a>
+    <a href="#query">Querying your data</a>
+    <a href="#exports">Exports (coming)</a>
+    <a href="#faq">FAQ</a>
+  </aside>
+  <article class="prose">
+    <span class="tag">History Archiver · Help</span>
+    <h1>Setup guide &amp; reference</h1>
+    <p>This guide covers version <strong>0.1.0</strong>, an early release. It describes what the integration actually does today, and marks what is still to come.</p>
+
+    <h2 id="install">Install</h2>
+    <ol class="steps">
+      <li>Make sure <a href="https://hacs.xyz/docs/use/">HACS</a> is installed.</li>
+      <li>In HACS open <strong>⋮ → Custom repositories</strong>, add <code>https://github.com/meyerjoshua123/ha-history-archiver</code> and choose <strong>Integration</strong>.</li>
+      <li>Download <strong>History Archiver</strong> and restart Home Assistant. HACS also installs its Python requirements (aiosqlite, openpyxl, pandas, pyarrow), so the first start can take a minute.</li>
+      <li>Go to <strong>Settings → Devices &amp; services → Add integration → History Archiver</strong>.</li>
+    </ol>
+
+    <h2 id="settings">Settings</h2>
+    <div class="table-wrap"><table>
+      <tr><th>Setting</th><th>Default</th><th>Meaning</th></tr>
+      <tr><td>Record interval</td><td>10 s</td><td>How often every numeric entity is sampled. Read <a href="#storage">Storage size</a> before choosing; 60 s is a good start for most homes.</td></tr>
+      <tr><td>Export path</td><td><code>history_archiver_exports</code></td><td>Where exports will be written once exports are exposed.</td></tr>
+    </table></div>
+    <p>You can change both later under the integration's <strong>Configure</strong>.</p>
+
+    <h2 id="status">What works today</h2>
+    <div class="table-wrap"><table>
+      <tr><th>Feature</th><th>Status in 0.1.0</th></tr>
+      <tr><td>Sampling numeric entities into SQLite</td><td>✅ Working</td></tr>
+      <tr><td>Syncing device/area info for every entity</td><td>✅ Working</td></tr>
+      <tr><td>Metadata fields (manufacturer, model, versions, class, category, integration, area, names)</td><td>✅ Tracked; choosing which to export comes with exports</td></tr>
+      <tr><td>Choosing which entities to record</td><td>⏳ Not yet: all numeric entities are recorded</td></tr>
+      <tr><td>Manual, predefined (day/week/month/year) and scheduled exports</td><td>⏳ Engine written, not yet exposed as services</td></tr>
+      <tr><td>Profiles</td><td>⏳ Stored in the database, no UI yet</td></tr>
+      <tr><td>Backup &amp; restore services</td><td>⏳ Not yet exposed</td></tr>
+    </table></div>
+    <div class="callout warn"><p>The repository README lists services such as <code>history_archiver.manual_export</code> and <code>backup_db</code>. In 0.1.0 these aren't registered yet, so they won't appear in Developer tools. Until they are, <a href="#query">query the database directly</a>.</p></div>
+
+    <h2 id="recorded">What's recorded</h2>
+    <ul>
+      <li><strong>Which entities:</strong> every entity in your entity registry whose state is a number (sensors, numbers, input numbers…). Text states like <code>on</code>/<code>off</code> are skipped.</li>
+      <li><strong>When:</strong> every record interval, one sample per entity with a UTC timestamp like <code>2026-09-27T03:15:00.123456</code>.</li>
+      <li><strong>Where:</strong> <code>/config/history_archiver/history.db</code>.</li>
+      <li><strong>Metadata:</strong> each entity's device and area are kept up to date on every sync.</li>
+    </ul>
+
+    <h2 id="storage">Storage size</h2>
+    <p>Each sample is one database row, roughly 80–120 bytes including the index. Daily growth is about:</p>
+<pre><code>rows per day = numeric entities × (86 400 ÷ record interval in seconds)</code></pre>
+    <div class="table-wrap"><table>
+      <tr><th>Numeric entities</th><th>Interval</th><th>Rows / day</th><th>≈ Size / day</th></tr>
+      <tr><td>100</td><td>10 s</td><td>864 000</td><td>~90 MB</td></tr>
+      <tr><td>300</td><td>10 s</td><td>2 592 000</td><td>~260 MB</td></tr>
+      <tr><td>300</td><td>60 s</td><td>432 000</td><td>~45 MB</td></tr>
+      <tr><td>300</td><td>300 s</td><td>86 400</td><td>~9 MB</td></tr>
+    </table></div>
+    <div class="callout"><p>On a Raspberry Pi or a small SD card, use a longer interval (60–300 s) and keep an eye on free space. There's no automatic clean-up yet.</p></div>
+
+    <h2 id="database">Database layout</h2>
+    <div class="table-wrap"><table>
+      <tr><th>Table</th><th>Holds</th></tr>
+      <tr><td><code>state_samples</code></td><td><code>entity_id</code>, <code>ts</code> (UTC ISO time), <code>value</code>, indexed by entity and time</td></tr>
+      <tr><td><code>entities</code></td><td>Every known entity with its <code>device_id</code> and <code>area_id</code></td></tr>
+      <tr><td><code>entity_metadata_selection</code></td><td>Which metadata fields to include per entity</td></tr>
+      <tr><td><code>profiles</code>, <code>profile_entities</code></td><td>Export profiles (for upcoming exports)</td></tr>
+      <tr><td><code>export_runs</code>, <code>db_backups</code></td><td>Logs for upcoming exports and backups</td></tr>
+      <tr><td><code>schema_version</code></td><td>For safe upgrades</td></tr>
+    </table></div>
+
+    <h2 id="query">Querying your data</h2>
+    <p>Until exports are exposed, you can read the database with any SQLite tool, e.g. <em>DB Browser for SQLite</em> on your computer (copy the file off first), or the SQLite Web add-on. For example:</p>
+<pre><code>-- Hourly average of one sensor over the last day
+SELECT substr(ts, 1, 13) AS hour, round(avg(value), 2) AS avg_value
+FROM state_samples
+WHERE entity_id = 'sensor.living_room_temperature'
+  AND ts &gt;= strftime('%Y-%m-%dT%H:%M:%S', 'now', '-1 day')
+GROUP BY hour
+ORDER BY hour;
+
+-- Which entities take the most space
+SELECT entity_id, count(*) AS samples
+FROM state_samples
+GROUP BY entity_id
+ORDER BY samples DESC
+LIMIT 20;</code></pre>
+    <p>To trim old data by hand (stop Home Assistant or copy the file first):</p>
+<pre><code>DELETE FROM state_samples WHERE ts &lt; strftime('%Y-%m-%dT%H:%M:%S', 'now', '-90 days');
+VACUUM;</code></pre>
+
+    <h2 id="exports">Exports (coming)</h2>
+    <p>The export engine already in the code will write <strong>CSV, JSON, HTML, XLSX, SQLite, Parquet, Feather and Arrow</strong>, with optional downsampling:</p>
+    <ul>
+      <li><strong>Raw</strong>: every sample.</li>
+      <li><strong>Mean</strong>: the average per interval.</li>
+      <li><strong>Weighted mean</strong>: a time-weighted average, better for sensors that report irregularly.</li>
+    </ul>
+    <p>Follow the <a href="https://github.com/meyerjoshua123/ha-history-archiver">GitHub repository</a> for the release that exposes exports, profiles and backups.</p>
+
+    <h2 id="faq">FAQ</h2>
+    <details><summary>Does it replace Home Assistant's recorder?</summary><p>No. It runs alongside it. The recorder powers Home Assistant's history graphs; History Archiver keeps its own evenly-spaced numeric samples for analysis.</p></details>
+    <details><summary>Can it record text states such as on/off?</summary><p>Not in 0.1.0: only numeric states are stored.</p></details>
+    <details><summary>Does anything leave my Home Assistant?</summary><p>No. The database lives in your config folder and nothing is sent anywhere.</p></details>
+    <details><summary>Something isn't working</summary><p>Please open an issue on <a href="https://github.com/meyerjoshua123/ha-history-archiver/issues">GitHub</a> with your Home Assistant version and any log lines mentioning <code>history_archiver</code>.</p></details>
+  </article>
+</div>
+</main>
+<footer class="footer">
+  <div class="footer-inner">
+    <div>
+      <a class="brand" href="/"><img src="/assets/logo-mark.svg" alt=""><span>Luukza <small>HACS</small></span></a>
+      <p style="margin-top:1rem">Home Assistant integrations for understanding your home: installed through HACS, running locally.</p>
+    </div>
+    <div>
+      <h4>HVAC Simulators</h4>
+      <ul>
+        <li><a href="/hvac-simulators/">Features</a></li>
+        <li><a href="/hvac-simulators/help/">Help &amp; setup</a></li>
+        <li><a href="https://github.com/meyerjoshua123/ha_hvac_simulators">GitHub</a></li>
+        <li><a href="https://github.com/meyerjoshua123/ha_hvac_simulators/releases">Releases</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>History Archiver</h4>
+      <ul>
+        <li><a href="/history-archiver/">Features</a></li>
+        <li><a href="/history-archiver/help/">Help &amp; setup</a></li>
+        <li><a href="https://github.com/meyerjoshua123/ha-history-archiver">GitHub</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>More</h4>
+      <ul>
+        <li><a href="https://luukza.com">luukza.com</a></li>
+        <li><a href="https://hacs.xyz">About HACS</a></li>
+        <li><a href="https://www.home-assistant.io">Home Assistant</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2026 Luukza · Hobby projects, provided as-is under the MIT licence.</p>
+    <p>HVAC Simulators and this site were built with the help of <a href="https://claude.com/claude-code">Claude Code</a>.</p>
+  </div>
+</footer>
+</body>
+</html>
