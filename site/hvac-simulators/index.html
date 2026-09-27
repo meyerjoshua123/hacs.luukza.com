@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HVAC Simulators · Features | Luukza HACS</title>
+<meta name="description" content="How HVAC Simulators works out what your heating, cooling and ventilation are doing from room sensors: rooms and zones, compressor cycling, plugged-in appliances, efficiency, effectiveness and learning.">
+<link rel="canonical" href="https://hacs.luukza.com/hvac-simulators/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="HVAC Simulators · Features | Luukza HACS">
+<meta property="og:description" content="How HVAC Simulators works out what your heating, cooling and ventilation are doing from room sensors: rooms and zones, compressor cycling, plugged-in appliances, efficiency, effectiveness and learning.">
+<meta property="og:url" content="https://hacs.luukza.com/hvac-simulators/">
+<meta name="theme-color" content="#1b6f5f">
+<link rel="icon" href="/assets/logo-mark.svg" type="image/svg+xml">
+<script>
+(function () {
+  try {
+    var s = localStorage.getItem("hacs-luukza-theme");
+    var dark = s === "dark" || (s !== "light" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+    document.documentElement.classList.toggle("dark", dark);
+  } catch (e) {}
+})();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="/assets/site.css">
+<script src="/assets/site.js" defer></script>
+</head>
+<body>
+<nav class="nav" aria-label="Main">
+  <div class="nav-inner">
+    <a class="brand" href="/"><img src="/assets/logo-mark.svg" alt=""><span>Luukza <small>HACS</small></span></a>
+    <div class="nav-links"><a href="/hvac-simulators/" aria-current="page">HVAC Simulators</a><a href="/hvac-simulators/help/">HVAC help</a><a href="/history-archiver/">History Archiver</a><a href="/history-archiver/help/">Archiver help</a></div>
+    <div class="nav-actions">
+      <button class="icon-btn" data-theme-toggle aria-label="Toggle light/dark theme"><svg class="theme-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path stroke-linecap="round" d="M12 3v1.5M12 19.5V21M4.5 12H3M21 12h-1.5M5.6 5.6l1.05 1.05M17.35 17.35l1.05 1.05M18.4 5.6l-1.05 1.05M6.65 17.35l-1.05 1.05"/></svg><svg class="theme-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg></button>
+      <button class="icon-btn menu-btn" data-menu-toggle aria-label="Menu" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+    </div>
+  </div>
+  <div class="mobile-menu"><a href="/hvac-simulators/" aria-current="page">HVAC Simulators</a><a href="/hvac-simulators/help/">HVAC help</a><a href="/history-archiver/">History Archiver</a><a href="/history-archiver/help/">Archiver help</a></div>
+</nav>
+<main>
+<section class="hero">
+  <div class="section">
+    <span class="tag">🌡️ HVAC Simulators · v0.3.0</span>
+    <h1><span class="gradient-text">Know what your HVAC is doing,</span><br>without plugs on it.</h1>
+    <p class="lead">HVAC Simulators watches how each room's temperature, humidity and CO2 change. It takes away what the weather, the building and your plugged-in appliances explain, and attributes the rest to your aircon, heater, fans or open windows. You get simulated appliances with modes, states, setpoints and energy, and they get more accurate every time you correct them.</p>
+    <div class="btn-row">
+      <a class="btn btn-primary" href="/hvac-simulators/help/#install">Install</a>
+      <a class="btn btn-secondary" href="https://github.com/meyerjoshua123/ha_hvac_simulators">GitHub</a>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="center" style="margin-bottom:2rem">
+    <span class="tag">How it works</span>
+    <h2 class="title">From sensor wiggles to "the aircon is cooling"</h2>
+    <p class="subtitle">Every minute (or every sensor update), for every room:</p>
+  </div>
+  <div class="diagram">
+    <svg viewBox="0 0 1000 210" role="img" aria-label="Sensor readings become trends; the building's passive drift and plugged-in appliance effects are removed; rules and learned examples score each cause; appliances get mode, state, setpoint and energy.">
+      <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="arrowhead" d="M0 0L10 5L0 10z"/></marker></defs>
+      <rect class="box" x="10" y="40" width="170" height="130" rx="14"/>
+      <text x="95" y="80" text-anchor="middle" font-size="16" font-weight="600">Room sensors</text>
+      <text class="muted-text" x="95" y="106" text-anchor="middle" font-size="13">temp · humidity · CO2</text>
+      <text class="muted-text" x="95" y="126" text-anchor="middle" font-size="13">air quality · doors</text>
+      <text class="muted-text" x="95" y="146" text-anchor="middle" font-size="13">outdoor · sun · plugs</text>
+      <line class="arrow" x1="182" y1="105" x2="218" y2="105" marker-end="url(#ah)"/>
+      <rect class="box" x="220" y="40" width="170" height="130" rx="14"/>
+      <text x="305" y="80" text-anchor="middle" font-size="16" font-weight="600">Trends</text>
+      <text class="muted-text" x="305" y="106" text-anchor="middle" font-size="13">°C/h · %/h · ppm/h</text>
+      <text class="muted-text" x="305" y="126" text-anchor="middle" font-size="13">absolute humidity</text>
+      <text class="muted-text" x="305" y="146" text-anchor="middle" font-size="13">compressor cycles</text>
+      <line class="arrow" x1="392" y1="105" x2="428" y2="105" marker-end="url(#ah)"/>
+      <rect class="box" x="430" y="40" width="170" height="130" rx="14"/>
+      <text x="515" y="80" text-anchor="middle" font-size="16" font-weight="600">Subtract</text>
+      <text class="muted-text" x="515" y="106" text-anchor="middle" font-size="13">building leakage</text>
+      <text class="muted-text" x="515" y="126" text-anchor="middle" font-size="13">fridge · dryer · oven</text>
+      <text class="muted-text" x="515" y="146" text-anchor="middle" font-size="13">(learned per kW)</text>
+      <line class="arrow" x1="602" y1="105" x2="638" y2="105" marker-end="url(#ah)"/>
+      <rect class="box-accent" x="640" y="40" width="160" height="130" rx="14"/>
+      <text x="720" y="80" text-anchor="middle" font-size="16" font-weight="600">Score causes</text>
+      <text class="muted-text" x="720" y="106" text-anchor="middle" font-size="13">physics rules</text>
+      <text class="muted-text" x="720" y="126" text-anchor="middle" font-size="13">+ what you taught</text>
+      <text class="muted-text" x="720" y="146" text-anchor="middle" font-size="13">→ confidence</text>
+      <line class="arrow" x1="802" y1="105" x2="838" y2="105" marker-end="url(#ah)"/>
+      <rect class="box" x="840" y="40" width="150" height="130" rx="14"/>
+      <text x="915" y="80" text-anchor="middle" font-size="16" font-weight="600">Appliances</text>
+      <text class="muted-text" x="915" y="106" text-anchor="middle" font-size="13">mode · state</text>
+      <text class="muted-text" x="915" y="126" text-anchor="middle" font-size="13">setpoint · power</text>
+      <text class="muted-text" x="915" y="146" text-anchor="middle" font-size="13">energy · rating</text>
+    </svg>
+  </div>
+  <p class="muted center" style="max-width:46rem;margin:0 auto">The rules come from physics: heat flows towards the colder side, CO2 only clears through real air exchange, and an aircon's coil pulls moisture out while it runs. What you teach is stored as examples. The more you teach, the more weight your examples get over the rules.</p>
+</section>
+
+<section class="section border-top">
+  <div class="center" style="margin-bottom:2rem">
+    <span class="tag">What it detects</span>
+    <h2 class="title">A cause for every change</h2>
+  </div>
+  <div class="grid grid-3">
+    <div class="card"><span class="emoji">🔥</span><h3>Heating</h3><p>Warming faster than the building shell explains, with a heater or heat-pump appliance to credit.</p></div>
+    <div class="card"><span class="emoji">❄️</span><h3>Cooling</h3><p>Temperature dropping fast while humidity lags, or a regular compressor cycle showing in humidity.</p></div>
+    <div class="card"><span class="emoji">💧</span><h3>Dehumidify &amp; humidify</h3><p>Humidity moving hard while the temperature barely moves, ignoring rises a shower in the same zone explains.</p></div>
+    <div class="card"><span class="emoji">🌀</span><h3>Extractor fans &amp; ventilation</h3><p>CO2 clearing faster than natural leakage while the doors and windows are known to be closed.</p></div>
+    <div class="card"><span class="emoji">🫧</span><h3>Air filtering</h3><p>Particulates improving while CO2 isn't. Filters clean air but can't remove CO2.</p></div>
+    <div class="card"><span class="emoji">🚪</span><h3>Open doors &amp; windows</h3><p>From door/window sensors, or estimated from two signs of outside air getting in.</p></div>
+    <div class="card"><span class="emoji">☀️</span><h3>Solar gain</h3><p>Warming with the sun up, when it's warm outside or the room is already well above outdoor on a mild day.</p></div>
+    <div class="card"><span class="emoji">🧱</span><h3>Heat leaking in / lost</h3><p>Drift towards the outdoor temperature at the rate your building's shell allows.</p></div>
+    <div class="card"><span class="emoji">🔌</span><h3>Appliance heat &amp; moisture</h3><p>A fridge, dryer, oven or stove explaining the change, learned from its smart plug.</p></div>
+  </div>
+</section>
+
+<section class="section border-top">
+  <div class="grid grid-2" style="align-items:start">
+    <div>
+      <span class="tag">Rooms &amp; zones</span>
+      <h2 class="title">Your home, room by room</h2>
+      <p class="muted">Every Home Assistant area can become a room with its own sensors, air volume and known air gaps. Link the rooms that flow into each other (an open doorway, a hallway, a gap under a door) and they form a zone.</p>
+      <ul class="muted">
+        <li>A <strong>bathroom fan</strong> in a bathroom with no sensors is seen through the CO2 in the living room it connects to.</li>
+        <li>A <strong>shower</strong> is detected from the bathroom's humidity surge, and stops the rest of the zone blaming a humidifier.</li>
+        <li>Put the <strong>dryer's plug</strong> in the laundry, and its heat and moisture are learned there.</li>
+        <li>Room-vs-room sensors show things like the laundry versus the living room.</li>
+      </ul>
+    </div>
+    <div>
+      <span class="tag">Cycling</span>
+      <h2 class="title">The cycling you can't see</h2>
+      <p class="muted">In an apartment, an aircon can run all night while the temperature barely moves, because the building's stored heat flows back in as fast as the unit removes it. The compressor still leaves a fingerprint: humidity falls while it runs and recovers while it rests, every 15–25 minutes.</p>
+      <p class="muted">HVAC Simulators finds that rhythm and ignores random wander. The unit stays in <strong>cool</strong> mode while its state follows the compressor between <strong>active</strong> and <strong>idle</strong>. Energy is charged for the real on-time, and it learns how far your room sensor reads from the unit's own thermostat.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section border-top">
+  <div class="center" style="margin-bottom:2rem">
+    <span class="tag">Appliances</span>
+    <h2 class="title">Simulated appliances with real states</h2>
+  </div>
+  <div class="grid grid-3">
+    <div class="card"><h3>HVAC units by function</h3><p>Tick <strong>Heat</strong>, <strong>Ventilate</strong> and/or <strong>Air condition</strong> and get the matching modes: heat, cool, dry, fresh-air ventilate and indoor filter. Set power per mode, a setpoint range and whether it's an inverter.</p></div>
+    <div class="card"><h3>Mode, state &amp; setpoint</h3><p>Each appliance has a mode, a state (active, idle or off) and a <em>reason</em> it's idle. The setpoint is detected from where the room turns around.</p></div>
+    <div class="card"><h3>Manual control</h3><p>Tell it the mode and setpoint you set. You can have that revert to auto after a set time, and it spots when the unit was actually switched off.</p></div>
+    <div class="card"><h3>Extractor fan groups</h3><p>Several fans as one group. It estimates how many are on from CO2, and once you calibrate each fan, which ones.</p></div>
+    <div class="card"><h3>Plugged-in appliances</h3><p>Fridge, washer, dryer, oven, stove or general appliances get an active/idle/off status from their plug, plus cycles, duty cycle and run length. Their heat and moisture is removed before detection.</p></div>
+    <div class="card"><h3>Dehumidifiers, humidifiers &amp; purifiers</h3><p>Standalone appliances that the matching cause can be attributed to.</p></div>
+  </div>
+</section>
+
+<section class="section border-top">
+  <div class="center" style="margin-bottom:2rem">
+    <span class="tag">Insight</span>
+    <h2 class="title">Numbers you can act on</h2>
+  </div>
+  <div class="grid grid-3">
+    <div class="card"><span class="emoji">⚡</span><h3>Power &amp; energy</h3><p>Estimated watts per appliance, including fan-only and idle power, plus a kWh sensor for the Energy dashboard. Or feed the power into PowerCalc.</p></div>
+    <div class="card"><span class="emoji">🧯</span><h3>Effectiveness &amp; filters</h3><p>Heating and cooling performance compared with just after the last filter clean, at the same outdoor conditions. Rated Excellent to Terrible, with notifications.</p></div>
+    <div class="card"><span class="emoji">🏡</span><h3>Efficiency record</h3><p>Each room's heat-loss coefficient, heat lost, solar gain, heat leaked in and air changes, day by day. Compare seasons, or your old and new home.</p></div>
+    <div class="card"><span class="emoji">👥</span><h3>People from CO2</h3><p>How many people are in a zone, adjusted for sleeping, resting, active or exercising, and calibrated with a head count.</p></div>
+    <div class="card"><span class="emoji">📈</span><h3>Differences &amp; rates</h3><p>Indoor versus outdoor temperature and absolute humidity (should you open a window?), and rates since the last reading and over 5, 10 and 15 minutes.</p></div>
+    <div class="card"><span class="emoji">🎓</span><h3>Learning</h3><p>Confirm or correct suggestions, calibrate setpoints, occupancy and fans. It also learns each room's heat-exchange rate and which appliance usually does what.</p></div>
+  </div>
+</section>
+
+<section class="section border-top center">
+  <h2 class="title">Ready to try it?</h2>
+  <p class="subtitle" style="margin-bottom:2rem">Only an indoor temperature sensor is required. Each extra sensor makes it smarter.</p>
+  <div class="btn-row">
+    <a class="btn btn-primary" href="/hvac-simulators/help/">Read the setup guide</a>
+    <a class="btn btn-secondary" href="https://github.com/meyerjoshua123/ha_hvac_simulators/releases">Release notes</a>
+  </div>
+</section>
+</main>
+<footer class="footer">
+  <div class="footer-inner">
+    <div>
+      <a class="brand" href="/"><img src="/assets/logo-mark.svg" alt=""><span>Luukza <small>HACS</small></span></a>
+      <p style="margin-top:1rem">Home Assistant integrations for understanding your home: installed through HACS, running locally.</p>
+    </div>
+    <div>
+      <h4>HVAC Simulators</h4>
+      <ul>
+        <li><a href="/hvac-simulators/">Features</a></li>
+        <li><a href="/hvac-simulators/help/">Help &amp; setup</a></li>
+        <li><a href="https://github.com/meyerjoshua123/ha_hvac_simulators">GitHub</a></li>
+        <li><a href="https://github.com/meyerjoshua123/ha_hvac_simulators/releases">Releases</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>History Archiver</h4>
+      <ul>
+        <li><a href="/history-archiver/">Features</a></li>
+        <li><a href="/history-archiver/help/">Help &amp; setup</a></li>
+        <li><a href="https://github.com/meyerjoshua123/ha-history-archiver">GitHub</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>More</h4>
+      <ul>
+        <li><a href="https://luukza.com">luukza.com</a></li>
+        <li><a href="https://hacs.xyz">About HACS</a></li>
+        <li><a href="https://www.home-assistant.io">Home Assistant</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2026 Luukza · Hobby projects, provided as-is under the MIT licence.</p>
+    <p>HVAC Simulators and this site were built with the help of <a href="https://claude.com/claude-code">Claude Code</a>.</p>
+  </div>
+</footer>
+</body>
+</html>
